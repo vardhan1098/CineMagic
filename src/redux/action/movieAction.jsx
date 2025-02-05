@@ -7,13 +7,15 @@ export const FETCH_MOVIES_SUCCESS = "FETCH_MOVIES_SUCCESS";
 export const FETCH_MOVIES_FAILURE = "FETCH_MOVIES_FAILURE";
 export const FETCH_MOVIES_DETAILS = "FETCH_MOVIES_DETAILS";
 
+console.log("OMDb API Key:", API_KEY);
+
 export const fetchMovies =
   (query = "", page = 1, filters = {}) =>
   async (dispatch, getState) => {
     dispatch({ type: FETCH_MOVIES_REQUEST });
 
     try {
-      let url = `http://www.omdbapi.com/?s=${
+      let url = `https://www.omdbapi.com/?s=${
         query || "marvel"
       }&page=${page}&apikey=${API_KEY}`;
 
@@ -33,8 +35,14 @@ export const fetchMovies =
 
       if (movies.length === 0 && page > 1) return;
       const movieDetailsPromises = movies.map(async (movie) => {
-        const details = await axios.get(`http://www.omdbapi.com/?i=${movie.imdbID}&apikey=${API_KEY}`);
-        return { ...movie, imdbRating: details.data.imdbRating || 0, Genre: details.data.Genre || "" };
+        const details = await axios.get(
+          `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=${API_KEY}`
+        );
+        return {
+          ...movie,
+          imdbRating: details.data.imdbRating || 0,
+          Genre: details.data.Genre || "",
+        };
       });
 
       movies = await Promise.all(movieDetailsPromises);
@@ -49,11 +57,10 @@ export const fetchMovies =
         movies.sort((a, b) => {
           const titleA = (a.Title || "").toUpperCase().trim();
           const titleB = (b.Title || "").toUpperCase().trim();
-          
-          return titleA.localeCompare(titleB, 'en', { sensitivity: 'base' });
+
+          return titleA.localeCompare(titleB, "en", { sensitivity: "base" });
         });
       }
-      
 
       const { movies: currentMovies } = getState().movies;
 
@@ -69,11 +76,11 @@ export const fetchMovies =
       dispatch({ type: FETCH_MOVIES_FAILURE, payload: error.message });
     }
   };
-  
+
 export const fetchMovieDetails = (id) => async (dispatch) => {
   try {
     const response = await axios.get(
-      `http://www.omdbapi.com/?i=${id}&apikey=${API_KEY}`
+      `https://www.omdbapi.com/?i=${id}&apikey=${API_KEY}`
     );
 
     if (response.status !== 200 || !response.data) {
