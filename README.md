@@ -43,3 +43,4 @@ Cine Magic is a Vite + React project that provides an interactive movie browsing
 
 # Hosted on Netlify with Continuous Deployment (CD)
 
+# ProjectLink : https://cinemagicog.netlify.app/
